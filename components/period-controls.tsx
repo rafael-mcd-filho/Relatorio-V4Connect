@@ -78,6 +78,7 @@ interface PeriodControlsProps {
   onChange: (from?: Date, to?: Date) => void;
   loading: boolean;
   onFetch: () => void;
+  readyToFetch?: boolean;
 }
 
 export function PeriodControls({
@@ -86,6 +87,7 @@ export function PeriodControls({
   onChange,
   loading,
   onFetch,
+  readyToFetch = true,
 }: PeriodControlsProps) {
   const preset = detectPreset(from, to);
 
@@ -111,7 +113,7 @@ export function PeriodControls({
 
   const clear = () => onChange(undefined, undefined);
 
-  const canFetch = !!from && !!to && !loading;
+  const canFetch = !!from && !!to && !loading && readyToFetch;
 
   return (
     <div className="rounded-xl border border-border bg-card p-4 shadow-card">

@@ -17,20 +17,24 @@ export function AuthContextBanner({
   const sourceLabel =
     selectedAuth?.source === "query"
       ? "Mapeado pela URL"
-      : selectedAuth?.source === "env"
-        ? "Token padrão do ambiente"
-        : selectedAuth?.source === "mock"
-          ? "Modo mock"
-          : "Aguardando consulta";
+      : selectedAuth?.source === "manual"
+        ? "Selecionado na tela"
+        : selectedAuth?.source === "env"
+          ? "Token padrão do ambiente"
+          : selectedAuth?.source === "mock"
+            ? "Modo mock"
+            : "Aguardando consulta";
 
   const toneClassName =
     selectedAuth?.source === "query"
       ? "border-primary/30 bg-primary/5"
-      : selectedAuth?.source === "env"
-        ? "border-[hsl(var(--chart-4)/0.30)] bg-[hsl(var(--chart-4)/0.08)]"
-        : selectedAuth?.source === "mock"
-          ? "border-[hsl(var(--chart-5)/0.30)] bg-[hsl(var(--chart-5)/0.08)]"
-          : "border-border bg-muted/20";
+      : selectedAuth?.source === "manual"
+        ? "border-[hsl(var(--chart-1)/0.30)] bg-[hsl(var(--chart-1)/0.08)]"
+        : selectedAuth?.source === "env"
+          ? "border-[hsl(var(--chart-4)/0.30)] bg-[hsl(var(--chart-4)/0.08)]"
+          : selectedAuth?.source === "mock"
+            ? "border-[hsl(var(--chart-5)/0.30)] bg-[hsl(var(--chart-5)/0.08)]"
+            : "border-border bg-muted/20";
 
   return (
     <div className={cn("rounded-xl border px-4 py-3", toneClassName)}>
@@ -46,10 +50,7 @@ export function AuthContextBanner({
         </div>
 
         <div className="grid grid-cols-1 gap-2 text-xs md:grid-cols-3">
-          <InfoRow
-            label="Conta na URL"
-            value={requestedCompanyId ?? "Nenhuma"}
-          />
+          <InfoRow label="Conta na URL" value={requestedCompanyId ?? "Nenhuma"} />
           <InfoRow
             label="Company ID usado"
             value={selectedAuth?.companyId ?? "Padrão do ambiente / mock"}

@@ -19,7 +19,7 @@ npm install
 npm run dev
 ```
 
-Acesse http://localhost:3000
+Acesse `http://localhost:3000`
 
 Sem token configurado o painel usa dados mockados (~520 sessoes geradas com distribuicao realista de horarios, canais, departamentos e status).
 
@@ -36,37 +36,40 @@ ANALYTICS_API_TOKEN=seu_token_aqui
 
 ## Deploy no Vercel
 
-1. `git init && git add -A && git commit -m "feat: initial dashboard"`
-2. Crie um repositorio no GitHub e faca o push.
-3. Em [vercel.com/new](https://vercel.com/new), importe o repositorio.
-4. Configure as variaveis `ANALYTICS_API_BASE` e `ANALYTICS_API_TOKEN` no projeto.
-5. Deploy automatico. O `vercel.json` ja define regiao `gru1` (Sao Paulo) e headers basicos de seguranca.
+1. Importe o repositorio no Vercel.
+2. Configure as variaveis `ANALYTICS_API_BASE` e `ANALYTICS_API_TOKEN`.
+3. Faça o deploy.
+
+O projeto define a regiao `gru1` (Sao Paulo) em `vercel.json`.
+
+## Embed em iframe
+
+O projeto esta configurado para aceitar iframe em qualquer dominio. O header enviado e:
+
+```text
+Content-Security-Policy: frame-ancestors *;
+```
+
+Isso deixa o painel embutivel em qualquer sistema externo.
 
 ## Estrutura
 
 ```text
 app/
   layout.tsx        Root layout + fonts + theme provider
-  page.tsx          Dashboard principal (client component)
+  page.tsx          Dashboard principal
   globals.css       Tokens de cor + utilidades
 components/
   charts/           Graficos Recharts
   ui/               Primitivas shadcn (Button, Card, Select, etc.)
-  filter-bar.tsx    Barra de filtros + CTA Obter dados
-  date-range-picker.tsx
   kpi-card.tsx      Card com sparkline SVG inline
   kpi-grid.tsx
 lib/
   api.ts            fetchSessions - chama a API externa ou gera mock
   analytics.ts      Funcoes de agregacao
+  company-auth.ts   Resolucao server-side dos tokens por companyId
+  company-catalog.ts Lista publica de empresas para selecao
   mock-data.ts      Gerador deterministico de sessoes
   types.ts
   utils.ts          cn, formatNumber, formatDuration, etc.
 ```
-
-## Paleta
-
-Light: `#F8FAFC` fundo, `#2563EB` primary, `#F97316` CTA, `#1E293B` texto.
-Dark: fundo `#0B1120`, primary `#3B82F6`.
-
-Tokens em `app/globals.css` (`--primary`, `--accent`, `--chart-1` ... `--chart-6`).

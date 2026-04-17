@@ -6,6 +6,10 @@ export async function GET(request: NextRequest) {
   const fromValue = request.nextUrl.searchParams.get("from");
   const toValue = request.nextUrl.searchParams.get("to");
   const companyId = request.nextUrl.searchParams.get("conta");
+  const authSource =
+    request.nextUrl.searchParams.get("authSource") === "manual"
+      ? "manual"
+      : "query";
 
   if (!fromValue || !toValue) {
     return NextResponse.json(
@@ -25,7 +29,10 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const { token, selectedAuth } = resolveSelectedAuthContext(companyId);
+    const { token, selectedAuth } = resolveSelectedAuthContext(
+      companyId,
+      authSource,
+    );
     const result = await fetchSessions({ from, to, token });
     return NextResponse.json(
       {

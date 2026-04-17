@@ -4,6 +4,7 @@ export interface FetchSessionsClientParams {
   from: Date;
   to: Date;
   companyId?: string;
+  selectionSource?: "query" | "manual";
   signal?: AbortSignal;
 }
 
@@ -11,6 +12,7 @@ export async function fetchSessions({
   from,
   to,
   companyId,
+  selectionSource,
   signal,
 }: FetchSessionsClientParams): Promise<FetchSessionsResult> {
   const params = new URLSearchParams({
@@ -19,6 +21,9 @@ export async function fetchSessions({
   });
   if (companyId) {
     params.set("conta", companyId);
+  }
+  if (selectionSource) {
+    params.set("authSource", selectionSource);
   }
 
   const res = await fetch(`/api/sessions?${params.toString()}`, {

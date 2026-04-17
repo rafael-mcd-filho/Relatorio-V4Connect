@@ -16,6 +16,7 @@ import { EmptyState } from "@/components/empty-state";
 import { DashboardSkeleton } from "@/components/dashboard-skeleton";
 import { AuthContextBanner } from "@/components/auth-context-banner";
 import { CohortConversionCard } from "@/components/cohort-conversion-card";
+import { CompanySelectorCard } from "@/components/company-selector-card";
 import { ConversionFunnelCard } from "@/components/conversion-funnel-card";
 import {
   computeDashboardAnalytics,
@@ -23,6 +24,7 @@ import {
   filterSessionsByVisualFilters,
 } from "@/lib/dashboard-analytics";
 import { fetchSessions } from "@/lib/client-api";
+import { COMPANY_CATALOG } from "@/lib/company-catalog";
 import type { SelectedAuthContext, Session } from "@/lib/types";
 
 export default function DashboardPage() {
@@ -36,7 +38,10 @@ export default function DashboardPage() {
   const [error, setError] = React.useState<string | null>(null);
   const [selectedAuth, setSelectedAuth] =
     React.useState<SelectedAuthContext | null>(null);
+  const [urlCompanyResolved, setUrlCompanyResolved] = React.useState(false);
   const [companyIdFromUrl, setCompanyIdFromUrl] =
+    React.useState<string | undefined>(undefined);
+  const [selectedCompanyId, setSelectedCompanyId] =
     React.useState<string | undefined>(undefined);
   const [visualFilters, setVisualFilters] = React.useState(
     DEFAULT_DASHBOARD_VISUAL_FILTERS,
@@ -47,11 +52,16 @@ export default function DashboardPage() {
       new URLSearchParams(window.location.search).get("conta")?.trim() ||
       undefined;
     setCompanyIdFromUrl(nextCompanyId);
+    setUrlCompanyResolved(true);
   }, []);
+
+  const activeCompanyId = companyIdFromUrl ?? selectedCompanyId;
+  const activeSelectionSource = companyIdFromUrl ? "query" : "manual";
 
   React.useEffect(() => {
     setSelectedAuth(null);
-  }, [companyIdFromUrl]);
+    setError(null);
+  }, [activeCompanyId]);
 
   const handleChange = (f?: Date, t?: Date) => {
     setFrom(f);
@@ -60,10 +70,23 @@ export default function DashboardPage() {
 
   const handleFetch = async () => {
     if (!from || !to) return;
+
+    if (!companyIdFromUrl && !selectedCompanyId) {
+      setError("Selecione uma empresa antes de buscar os dados.");
+      setSelectedAuth(null);
+      return;
+    }
+
     setLoading(true);
     setError(null);
+
     try {
-      const result = await fetchSessions({ from, to, companyId: companyIdFromUrl });
+      const result = await fetchSessions({
+        from,
+        to,
+        companyId: activeCompanyId,
+        selectionSource: activeSelectionSource,
+      });
       setSessions(result.sessions);
       setSelectedAuth(result.selectedAuth ?? null);
     } catch (e) {
@@ -134,6 +157,14 @@ export default function DashboardPage() {
     <main className="mx-auto w-full max-w-[1400px] space-y-5 p-4 md:p-6">
       <LoadingModal open={loading} />
 
+      {urlCompanyResolved && !companyIdFromUrl && (
+        <CompanySelectorCard
+          companies={COMPANY_CATALOG}
+          value={selectedCompanyId}
+          onChange={setSelectedCompanyId}
+        />
+      )}
+
       <AuthContextBanner
         requestedCompanyId={companyIdFromUrl}
         selectedAuth={selectedAuth}
@@ -145,6 +176,7 @@ export default function DashboardPage() {
         onChange={handleChange}
         loading={loading}
         onFetch={handleFetch}
+        readyToFetch={!!companyIdFromUrl || !!selectedCompanyId}
       />
 
       {error && (

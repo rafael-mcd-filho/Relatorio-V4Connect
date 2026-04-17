@@ -111,7 +111,7 @@ export interface SessionsDebugPayload {
 }
 
 export interface SelectedAuthContext {
-  source: "query" | "env" | "mock";
+  source: "query" | "manual" | "env" | "mock";
   companyId?: string;
   companyName?: string;
   token?: string;
