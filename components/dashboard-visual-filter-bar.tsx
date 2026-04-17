@@ -42,7 +42,7 @@ export function DashboardVisualFilterBar({
         <FilterCheckbox
           checked={filters.adsOnly}
           title="Somente anúncio"
-          description="Inclui apenas contatos com a tag Anúncio."
+          description="Inclui apenas contatos com a tag Anúncio ou Anúncios."
           onChange={(checked) =>
             onChange({
               ...filters,

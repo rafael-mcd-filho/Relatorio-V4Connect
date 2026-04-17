@@ -396,7 +396,11 @@ function isOtherClassification(
 }
 
 function hasAnnouncementTag(tagNames: string[]) {
-  return tagNames.some((tag) => normalizeText(tag) === "anuncio");
+  return tagNames.some((tag) => {
+    const normalizedTag = normalizeText(tag);
+
+    return normalizedTag === "anuncio" || normalizedTag === "anuncios";
+  });
 }
 
 function isAdLead(contact: Contact | undefined) {
