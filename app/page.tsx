@@ -57,6 +57,14 @@ export default function DashboardPage() {
 
   const activeCompanyId = companyIdFromUrl ?? selectedCompanyId;
   const activeSelectionSource = companyIdFromUrl ? "query" : "manual";
+  const requestedCompanyName = React.useMemo(
+    () =>
+      companyIdFromUrl
+        ? COMPANY_CATALOG.find((company) => company.companyId === companyIdFromUrl)
+            ?.companyName
+        : undefined,
+    [companyIdFromUrl],
+  );
 
   React.useEffect(() => {
     setSelectedAuth(null);
@@ -167,6 +175,7 @@ export default function DashboardPage() {
 
       <AuthContextBanner
         requestedCompanyId={companyIdFromUrl}
+        requestedCompanyName={requestedCompanyName}
         selectedAuth={selectedAuth}
       />
 
