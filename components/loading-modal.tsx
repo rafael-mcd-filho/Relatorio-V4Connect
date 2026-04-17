@@ -21,7 +21,7 @@ export function LoadingModal({
               Carregando dados
             </div>
             <div className="mt-1 text-sm text-muted-foreground">
-              Buscando sessoes, cruzando contatos e recalculando as metricas.
+              Buscando sessões, cruzando contatos e recalculando as métricas.
             </div>
           </div>
         </div>

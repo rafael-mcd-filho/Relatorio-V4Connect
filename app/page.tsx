@@ -18,6 +18,7 @@ import { AuthContextBanner } from "@/components/auth-context-banner";
 import { CohortConversionCard } from "@/components/cohort-conversion-card";
 import { CompanySelectorCard } from "@/components/company-selector-card";
 import { ConversionFunnelCard } from "@/components/conversion-funnel-card";
+import { OutcomeContactsCard } from "@/components/outcome-contacts-card";
 import {
   computeDashboardAnalytics,
   DEFAULT_DASHBOARD_VISUAL_FILTERS,
@@ -258,6 +259,13 @@ export default function DashboardPage() {
               <CommercialInsightsCard analytics={analytics} />
               <OperationsInsightsCard analytics={analytics} />
             </div>
+          )}
+
+          {analytics && analytics.kpis.totalSessions > 0 && (
+            <OutcomeContactsCard
+              analytics={analytics}
+              sessions={filteredSessions ?? []}
+            />
           )}
         </div>
       )}

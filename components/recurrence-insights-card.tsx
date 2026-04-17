@@ -22,37 +22,37 @@ export function RecurrenceInsightsCard({
     {
       label: "Contatos com mais de 1 atendimento",
       value: formatNumber(analytics.recurrence.repeatContacts),
-      hint: "Mesma pessoa reapareceu no periodo",
+      hint: "Mesma pessoa reapareceu no período",
     },
     {
-      label: "Media de atendimentos por contato",
+      label: "Média de atendimentos por contato",
       value: analytics.recurrence.averageSessionsPerContact.toFixed(2).replace(".", ","),
-      hint: "Total de sessoes / contatos unicos",
+      hint: "Total de sessões / contatos únicos",
     },
     {
-      label: "Contatos de anuncio",
+      label: "Contatos de anúncio",
       value: formatNumber(analytics.recurrence.adTagContacts),
       hint: `Faturamento ${formatCurrency(analytics.recurrence.adTagRevenue)}`,
     },
     {
-      label: "Contatos organicos",
+      label: "Contatos orgânicos",
       value: formatNumber(analytics.recurrence.organicContacts),
       hint: `Faturamento ${formatCurrency(analytics.recurrence.organicRevenue)}`,
     },
     {
       label: "Contatos que ganharam e perderam",
       value: formatNumber(analytics.recurrence.contactsWonAndLost),
-      hint: "Aparecem com WON e LOST no mesmo periodo",
+      hint: "Aparecem com WON e LOST no mesmo período",
     },
   ];
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recorrencia</CardTitle>
+        <CardTitle>Recorrência</CardTitle>
         <CardDescription>
-          Retorno de contatos, comparativo anuncio x organico e mistura de
-          resultados no periodo.
+          Retorno de contatos, comparativo anúncio x orgânico e mistura de
+          resultados no período.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
