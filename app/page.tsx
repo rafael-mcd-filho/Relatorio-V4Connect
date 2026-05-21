@@ -163,7 +163,7 @@ export default function DashboardPage() {
   const showInitialSkeleton = loading && !sessions;
 
   return (
-    <main className="mx-auto w-full max-w-[1400px] space-y-5 p-4 md:p-6">
+    <main className="mx-auto w-full max-w-[1400px] space-y-7 p-4 md:p-8">
       <LoadingModal open={loading} />
 
       {urlCompanyResolved && !companyIdFromUrl && (
@@ -212,7 +212,7 @@ export default function DashboardPage() {
           description="Não há registros no período selecionado. Tente ampliar o intervalo."
         />
       ) : (
-        <div className="animate-fade-in space-y-5">
+        <div className="animate-fade-in space-y-7">
           <DashboardVisualFilterBar
             filters={visualFilters}
             channels={channelOptions}
@@ -229,7 +229,7 @@ export default function DashboardPage() {
           )}
 
           {analytics && analytics.kpis.totalSessions > 0 && (
-            <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
               <div className="xl:col-span-4">
                 <CohortConversionCard analytics={analytics} />
               </div>
@@ -240,7 +240,7 @@ export default function DashboardPage() {
           )}
 
           {analytics && analytics.kpis.totalSessions > 0 && (
-            <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
               <div className="lg:col-span-4">
                 <StatusBreakdown sessions={filteredSessions ?? []} />
               </div>
@@ -255,7 +255,7 @@ export default function DashboardPage() {
           )}
 
           {analytics && analytics.kpis.totalSessions > 0 && (
-            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
               <CommercialInsightsCard analytics={analytics} />
               <OperationsInsightsCard analytics={analytics} />
             </div>

@@ -43,7 +43,7 @@ function DimensionRows({
         items.slice(0, 8).map((item) => (
           <div
             key={item.key}
-            className="rounded-xl border border-border bg-muted/20 p-3"
+            className="rounded-xl border border-border/50 bg-muted/15 p-4 transition-all duration-200 hover:bg-muted/25 hover:shadow-sm hover:border-border/70"
           >
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">

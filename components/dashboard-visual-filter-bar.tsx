@@ -38,7 +38,7 @@ export function DashboardVisualFilterBar({
           Refinam a leitura do dashboard sem refazer a requisição.
         </CardDescription>
       </CardHeader>
-      <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <CardContent className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
         <FilterCheckbox
           checked={filters.adsOnly}
           title="Somente anúncio"
@@ -131,16 +131,16 @@ function FilterCheckbox({
   onChange: (checked: boolean) => void;
 }) {
   return (
-    <label className="flex items-center gap-3 rounded-xl border border-border bg-muted/20 px-4 py-3">
+    <label className="flex items-start gap-3 rounded-xl border border-border/50 bg-muted/15 px-4 py-3 transition-all duration-200 hover:bg-muted/25 hover:border-border/70 hover:shadow-sm cursor-pointer">
       <input
         type="checkbox"
         checked={checked}
         onChange={(event) => onChange(event.target.checked)}
-        className="h-4 w-4 rounded border-border"
+        className="h-4 w-4 rounded border-border mt-0.5 shrink-0"
       />
       <div>
         <div className="text-sm font-medium text-foreground">{title}</div>
-        <div className="text-xs text-muted-foreground">{description}</div>
+        <div className="text-xs text-muted-foreground/80">{description}</div>
       </div>
     </label>
   );

@@ -113,56 +113,56 @@ export function ConversionFunnelCard({
                 : 0;
 
           return (
-            <div key={stage.key}>
-              <div className={cn("mx-auto", stage.widthClass)}>
+            <div key={stage.key} className="animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
+              <div className={cn("mx-auto transition-all duration-300", stage.widthClass)}>
                 <div
-                  className="rounded-2xl border p-4"
+                  className="rounded-2xl border p-5 transition-all duration-300 hover:shadow-md hover:scale-[1.01] group"
                   style={{
                     backgroundColor: stage.surfaceColor,
                     borderColor: stage.borderColor,
                   }}
                 >
-                  <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                    <div className="flex min-w-0 items-start gap-3">
+                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div className="flex min-w-0 items-center gap-3">
                       <div
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl"
+                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110"
                         style={{
                           backgroundColor: stage.iconSurfaceColor,
                           color: stage.color,
                         }}
                       >
-                        <Icon className="h-4 w-4" />
+                        <Icon className="h-5 w-5" />
                       </div>
 
                       <div className="min-w-0">
-                        <div className="text-sm font-semibold text-foreground">
+                        <div className="text-sm font-semibold leading-tight text-foreground">
                           <MetricLabel
                             label={stage.label}
                             explanation={stage.explanation}
                           />
                         </div>
-                        <p className="mt-1 text-xs text-muted-foreground">
+                        <p className="mt-1 text-xs text-muted-foreground/80 line-clamp-2">
                           {stage.helper}
                         </p>
                       </div>
                     </div>
 
                     <div className="shrink-0 text-left md:text-right">
-                      <div className="font-display text-3xl font-semibold font-tabular text-foreground">
+                      <div className="font-display text-2xl md:text-3xl font-semibold font-tabular text-foreground">
                         {formatNumber(stage.value)}
                       </div>
-                      <div className="mt-1 text-xs text-muted-foreground">
+                      <div className="mt-1 text-xs text-muted-foreground/80">
                         {stage.key === "total"
-                          ? "Base de 100% dos contatos"
+                          ? "100% de referência"
                           : `${formatPercent(percentage)} da base`}
                       </div>
                     </div>
                   </div>
 
                   <div className="mt-4 space-y-2">
-                    <div className="h-2.5 overflow-hidden rounded-full bg-background/80">
+                    <div className="h-3 overflow-hidden rounded-full bg-background/60 transition-colors duration-300">
                       <div
-                        className="h-full rounded-full transition-all"
+                        className="h-full rounded-full transition-all duration-700 ease-out"
                         style={{
                           width: `${progressWidth}%`,
                           backgroundColor: stage.color,
@@ -170,14 +170,14 @@ export function ConversionFunnelCard({
                       />
                     </div>
 
-                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground/70">
                       <span>
                         {stage.key === "total"
-                          ? "Referência para comparar os resultados finais."
-                          : "Participação dessa etapa dentro da base total."}
+                          ? "Referência 100%"
+                          : "Participação da etapa"}
                       </span>
-                      <span className="font-tabular">
-                        {formatNumber(stage.value)} contatos
+                      <span className="font-tabular font-medium">
+                        {formatNumber(stage.value)}
                       </span>
                     </div>
                   </div>
@@ -185,8 +185,8 @@ export function ConversionFunnelCard({
               </div>
 
               {index < stages.length - 1 ? (
-                <div className="flex justify-center py-2 text-muted-foreground">
-                  <ArrowDown className="h-4 w-4" />
+                <div className="flex justify-center py-3 text-muted-foreground/40 transition-colors duration-300 group-hover:text-muted-foreground/60">
+                  <ArrowDown className="h-5 w-5" />
                 </div>
               ) : null}
             </div>

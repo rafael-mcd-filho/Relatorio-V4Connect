@@ -3,10 +3,8 @@
 import * as React from "react";
 import {
   ExternalLink,
-  Eye,
   TrendingUp,
   TriangleAlert,
-  X,
 } from "lucide-react";
 import type {
   DashboardAnalytics,
@@ -20,7 +18,6 @@ import {
   formatNumber,
 } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -255,55 +252,54 @@ function buildOutcomeRows(
 function OutcomeRows({
   rows,
   emptyText,
-  onSelect,
 }: {
   rows: ContactOutcomeRow[];
   emptyText: string;
-  onSelect: (row: ContactOutcomeRow) => void;
 }) {
   if (rows.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-border p-5 text-sm text-muted-foreground">
+      <div className="rounded-xl border border-dashed border-border p-4 text-xs text-muted-foreground">
         {emptyText}
       </div>
     );
   }
 
   return (
-    <div className="max-h-[560px] space-y-3 overflow-auto pr-1">
+    <div className="max-h-[480px] space-y-2 overflow-auto pr-1">
       {rows.map((row) => {
         const content = (
           <>
-            <div className="flex min-w-0 items-start justify-between gap-4">
+            <div className="flex min-w-0 items-start justify-between gap-3">
               <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="truncate text-sm font-semibold text-foreground">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <div className="truncate text-xs font-semibold text-foreground">
                     {row.contactName}
                   </div>
-                  {row.isNew ? <Badge variant="accent">Novo</Badge> : null}
+                  {row.isNew ? <Badge variant="accent" className="text-[10px] px-2 py-0.5">Novo</Badge> : null}
                   <Badge
                     variant={row.leadSource === "Anúncio" ? "warning" : "muted"}
+                    className="text-[10px] px-2 py-0.5"
                   >
                     {row.leadSource}
                   </Badge>
                   {!row.previewAvailable ? (
-                    <Badge variant="outline">Sem preview</Badge>
+                    <Badge variant="outline" className="text-[10px] px-2 py-0.5">Sem preview</Badge>
                   ) : null}
                 </div>
 
-                <div className="mt-2 text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground">Motivo:</span>{" "}
-                  {row.reason}
+                <div className="mt-1 text-[11px] text-muted-foreground/90">
+                  <span className="font-medium text-foreground/80">Motivo:</span>{" "}
+                  <span className="text-muted-foreground">{row.reason}</span>
                 </div>
 
-                <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                <div className="mt-0.5 flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] text-muted-foreground/80">
                   <span>{formatNumber(row.totalSessions)} atendimentos</span>
                   {row.previewAgentName ? <span>Agente: {row.previewAgentName}</span> : null}
                   <span>{formatPreviewDate(row.previewSessionAt)}</span>
                 </div>
 
                 {row.leadSourceDetail ? (
-                  <div className="mt-1 truncate text-xs text-muted-foreground">
+                  <div className="mt-0.5 truncate text-[10px] text-muted-foreground/80">
                     Origem: {row.leadSourceDetail}
                   </div>
                 ) : null}
@@ -312,7 +308,7 @@ function OutcomeRows({
               <div className="shrink-0 text-right">
                 <div
                   className={cn(
-                    "font-tabular text-sm font-semibold",
+                    "font-tabular text-xs font-semibold",
                     row.outcome === "won" ? "text-success" : "text-foreground",
                   )}
                 >
@@ -320,27 +316,27 @@ function OutcomeRows({
                     ? formatCurrency(row.revenue)
                     : formatNumber(row.totalSessions)}
                 </div>
-                <div className="mt-1 text-xs text-muted-foreground">
+                <div className="mt-0.5 text-[10px] text-muted-foreground/80">
                   {row.outcome === "won"
-                    ? "faturamento do contato"
-                    : "sessões no período"}
+                    ? "faturamento"
+                    : "sessões"}
                 </div>
-                <div className="mt-2 inline-flex items-center gap-1 text-xs text-primary">
-                  <Eye className="h-3.5 w-3.5" />
+                <div className="mt-1 inline-flex items-center gap-0.5 text-[10px] text-primary">
+                  <ExternalLink className="h-3 w-3" />
                   {row.previewAvailable
-                    ? "Clique para abrir preview"
-                    : "Preview indisponível"}
+                    ? "Abrir"
+                    : "Indisponível"}
                 </div>
               </div>
             </div>
           </>
         );
 
-        if (!row.previewAvailable) {
+        if (!row.previewUrl) {
           return (
             <div
               key={row.contactId}
-              className="rounded-xl border border-border bg-muted/20 p-4"
+              className="rounded-lg border border-border bg-muted/15 p-2.5 transition-all duration-200 hover:bg-muted/25 hover:shadow-sm"
             >
               {content}
             </div>
@@ -348,111 +344,17 @@ function OutcomeRows({
         }
 
         return (
-          <button
+          <a
             key={row.contactId}
-            type="button"
-            onClick={() => onSelect(row)}
-            className="w-full rounded-xl border border-border bg-muted/20 p-4 text-left transition-colors hover:bg-muted/35"
+            href={row.previewUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="block rounded-lg border border-border bg-muted/15 p-2.5 text-left transition-all duration-200 hover:bg-muted/25 hover:shadow-sm hover:border-border/80"
           >
             {content}
-          </button>
+          </a>
         );
       })}
-    </div>
-  );
-}
-
-function SessionPreviewModal({
-  row,
-  onClose,
-}: {
-  row: ContactOutcomeRow | null;
-  onClose: () => void;
-}) {
-  React.useEffect(() => {
-    if (!row) return undefined;
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [row, onClose]);
-
-  if (!row) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm">
-      <button
-        type="button"
-        aria-label="Fechar preview"
-        className="absolute inset-0 cursor-default"
-        onClick={onClose}
-      />
-
-      <div className="relative flex h-[88vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl">
-        <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-4">
-          <div className="min-w-0">
-            <div className="text-base font-semibold text-foreground">
-              {row.contactName}
-            </div>
-            <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
-              <span>{row.outcome === "won" ? "Contato ganho" : "Contato perdido"}</span>
-              <span>{row.reason}</span>
-              <span>{formatPreviewDate(row.previewSessionAt)}</span>
-              {row.previewSessionId ? <span>Sessão {row.previewSessionId}</span> : null}
-            </div>
-          </div>
-
-          <div className="flex shrink-0 items-center gap-2">
-            {row.previewUrl ? (
-              <Button variant="outline" size="sm" asChild>
-                <a href={row.previewUrl} target="_blank" rel="noreferrer">
-                  <ExternalLink className="h-4 w-4" />
-                  Abrir em nova aba
-                </a>
-              </Button>
-            ) : null}
-
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-        <div className="flex-1 p-5">
-          {row.previewUrl ? (
-            <>
-              <div className="mb-3 text-xs text-muted-foreground">
-                Se o preview não carregar abaixo, use{" "}
-                <span className="font-medium text-foreground">
-                  Abrir em nova aba
-                </span>
-                .
-              </div>
-              <iframe
-                title={`Preview da sessão de ${row.contactName}`}
-                src={row.previewUrl}
-                className="h-full min-h-[520px] w-full rounded-xl border border-border bg-muted"
-              />
-            </>
-          ) : (
-            <div className="flex h-full items-center justify-center rounded-xl border border-dashed border-border bg-muted/20 p-6 text-sm text-muted-foreground">
-              Essa sessão não trouxe preview na resposta da API.
-            </div>
-          )}
-        </div>
-      </div>
     </div>
   );
 }
@@ -465,9 +367,6 @@ export function OutcomeContactsCard({
   sessions: Session[];
 }) {
   const [tab, setTab] = React.useState<OutcomeTab>("won");
-  const [selectedRow, setSelectedRow] = React.useState<ContactOutcomeRow | null>(
-    null,
-  );
   const rows = React.useMemo(
     () => buildOutcomeRows(analytics, sessions),
     [analytics, sessions],
@@ -481,7 +380,7 @@ export function OutcomeContactsCard({
             <CardTitle>Contatos ganhos e perdidos</CardTitle>
             <CardDescription>
               Lista consolidada por contato. Ao clicar em uma linha, o dashboard
-              abre o preview da sessão mais representativa daquele resultado.
+              abre em nova aba a sessão mais representativa daquele resultado.
             </CardDescription>
           </div>
 
@@ -505,21 +404,17 @@ export function OutcomeContactsCard({
               <OutcomeRows
                 rows={rows.won}
                 emptyText="Nenhum contato ganho apareceu com os filtros atuais."
-                onSelect={setSelectedRow}
               />
             </TabsContent>
             <TabsContent value="lost">
               <OutcomeRows
                 rows={rows.lost}
                 emptyText="Nenhum contato perdido apareceu com os filtros atuais."
-                onSelect={setSelectedRow}
               />
             </TabsContent>
           </Tabs>
         </CardContent>
       </Card>
-
-      <SessionPreviewModal row={selectedRow} onClose={() => setSelectedRow(null)} />
     </>
   );
 }

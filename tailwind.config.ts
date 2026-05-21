@@ -78,9 +78,9 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
-        card: "0 1px 2px 0 hsl(215 25% 27% / 0.04), 0 1px 3px 0 hsl(215 25% 27% / 0.06)",
+        card: "0 1px 2px 0 hsl(215 25% 27% / 0.03), 0 1px 3px 0 hsl(215 25% 27% / 0.04)",
         "card-hover":
-          "0 4px 6px -1px hsl(215 25% 27% / 0.08), 0 2px 4px -2px hsl(215 25% 27% / 0.06)",
+          "0 4px 8px -2px hsl(215 25% 27% / 0.08), 0 2px 4px -2px hsl(215 25% 27% / 0.05)",
       },
       keyframes: {
         "accordion-down": {

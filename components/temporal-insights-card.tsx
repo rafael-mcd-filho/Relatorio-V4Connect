@@ -41,15 +41,15 @@ export function TemporalInsightsCard({
       </CardHeader>
 
       <CardContent>
-        <div className="h-[340px]">
+        <div className="h-[360px]">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart
               data={analytics.byDay}
-              margin={{ top: 10, right: 10, bottom: 0, left: -20 }}
+              margin={{ top: 12, right: 16, bottom: 4, left: -8 }}
             >
               <CartesianGrid
                 strokeDasharray="3 3"
-                stroke="hsl(var(--border))"
+                stroke="hsl(var(--border) / 0.5)"
                 vertical={false}
               />
               <XAxis
@@ -102,37 +102,37 @@ export function TemporalInsightsCard({
                 dataKey="totalSessions"
                 name="Atendimentos"
                 fill="hsl(var(--chart-1))"
-                radius={[6, 6, 0, 0]}
+                radius={[8, 8, 0, 0]}
               />
               <Line
                 yAxisId="volume"
-                type="monotone"
+                type="natural"
                 dataKey="wonSessions"
                 name="Ganhos"
                 stroke="hsl(var(--chart-3))"
-                strokeWidth={2}
-                dot={{ r: 3, strokeWidth: 1, fill: "hsl(var(--chart-3))" }}
-                activeDot={{ r: 5 }}
+                strokeWidth={2.5}
+                dot={{ r: 3.5, strokeWidth: 1.5, fill: "hsl(var(--background))" }}
+                activeDot={{ r: 6, strokeWidth: 2 }}
               />
               <Line
                 yAxisId="volume"
-                type="monotone"
+                type="natural"
                 dataKey="lostSessions"
                 name="Perdidos"
                 stroke="hsl(var(--chart-6))"
-                strokeWidth={2}
-                dot={{ r: 3, strokeWidth: 1, fill: "hsl(var(--chart-6))" }}
-                activeDot={{ r: 5 }}
+                strokeWidth={2.5}
+                dot={{ r: 3.5, strokeWidth: 1.5, fill: "hsl(var(--background))" }}
+                activeDot={{ r: 6, strokeWidth: 2 }}
               />
               <Line
                 yAxisId="revenue"
-                type="monotone"
+                type="natural"
                 dataKey="revenue"
                 name="Faturamento"
                 stroke="hsl(var(--chart-4))"
-                strokeWidth={2}
-                dot={{ r: 3, strokeWidth: 1, fill: "hsl(var(--chart-4))" }}
-                activeDot={{ r: 5 }}
+                strokeWidth={2.5}
+                dot={{ r: 3.5, strokeWidth: 1.5, fill: "hsl(var(--background))" }}
+                activeDot={{ r: 6, strokeWidth: 2 }}
               />
             </ComposedChart>
           </ResponsiveContainer>

@@ -60,11 +60,11 @@ function ReasonChart({
             <BarChart
               data={data}
               layout="vertical"
-              margin={{ top: 10, right: 16, bottom: 0, left: 0 }}
+              margin={{ top: 12, right: 20, bottom: 0, left: 0 }}
             >
               <CartesianGrid
                 strokeDasharray="3 3"
-                stroke="hsl(var(--border))"
+                stroke="hsl(var(--border) / 0.5)"
                 horizontal={false}
               />
               <XAxis

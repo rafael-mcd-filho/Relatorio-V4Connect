@@ -64,14 +64,14 @@ export function SessionsTimeline({ sessions }: { sessions: Session[] }) {
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={data}
-              margin={{ top: 10, right: 10, bottom: 0, left: -20 }}
+              margin={{ top: 12, right: 12, bottom: 4, left: -12 }}
             >
               <defs>
                 <linearGradient id="timeline-total" x1="0" y1="0" x2="0" y2="1">
                   <stop
                     offset="0%"
                     stopColor="hsl(var(--chart-1))"
-                    stopOpacity={0.35}
+                    stopOpacity={0.4}
                   />
                   <stop
                     offset="100%"
@@ -83,7 +83,7 @@ export function SessionsTimeline({ sessions }: { sessions: Session[] }) {
                   <stop
                     offset="0%"
                     stopColor="hsl(var(--chart-3))"
-                    stopOpacity={0.4}
+                    stopOpacity={0.45}
                   />
                   <stop
                     offset="100%"
@@ -95,7 +95,7 @@ export function SessionsTimeline({ sessions }: { sessions: Session[] }) {
                   <stop
                     offset="0%"
                     stopColor="hsl(var(--chart-6))"
-                    stopOpacity={0.35}
+                    stopOpacity={0.4}
                   />
                   <stop
                     offset="100%"
@@ -107,7 +107,7 @@ export function SessionsTimeline({ sessions }: { sessions: Session[] }) {
 
               <CartesianGrid
                 strokeDasharray="3 3"
-                stroke="hsl(var(--border))"
+                stroke="hsl(var(--border) / 0.5)"
                 vertical={false}
               />
 
@@ -152,10 +152,10 @@ export function SessionsTimeline({ sessions }: { sessions: Session[] }) {
                   dataKey="total"
                   name="Atendimentos"
                   stroke="hsl(var(--chart-1))"
-                  strokeWidth={2}
+                  strokeWidth={2.5}
                   fill="url(#timeline-total)"
                   activeDot={{
-                    r: 5,
+                    r: 6,
                     strokeWidth: 2,
                     stroke: "hsl(var(--background))",
                   }}

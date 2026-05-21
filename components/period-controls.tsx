@@ -116,8 +116,8 @@ export function PeriodControls({
   const canFetch = !!from && !!to && !loading && readyToFetch;
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4 shadow-card">
-      <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-end">
+    <div className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:border-border/80">
+      <div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:items-end">
         <Field label="Período" className="min-w-[180px] flex-1 md:max-w-[260px]">
           <Select value={preset} onValueChange={applyPreset}>
             <SelectTrigger>

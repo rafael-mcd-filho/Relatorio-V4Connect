@@ -86,10 +86,12 @@ export function StatusBreakdown({ sessions }: { sessions: Session[] }) {
                   data={data}
                   dataKey="value"
                   nameKey="label"
-                  innerRadius={52}
-                  outerRadius={82}
+                  innerRadius={54}
+                  outerRadius={84}
                   paddingAngle={2}
                   strokeWidth={0}
+                  animationDuration={600}
+                  animationEasing="ease-out"
                 >
                   {data.map((item) => (
                     <Cell key={item.name} fill={item.color} />
@@ -111,24 +113,24 @@ export function StatusBreakdown({ sessions }: { sessions: Session[] }) {
               </PieChart>
             </ResponsiveContainer>
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-[11px] uppercase tracking-wider text-muted-foreground">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">
                 Total
               </span>
-              <span className="font-display text-2xl font-semibold font-tabular">
+              <span className="font-display text-3xl font-semibold font-tabular text-foreground">
                 {formatNumber(total)}
               </span>
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {data.map((item) => (
               <div
                 key={item.name}
-                className="flex items-center justify-between gap-3 text-xs"
+                className="flex items-center justify-between gap-3 text-xs transition-all duration-200 hover:bg-muted/30 px-2 py-1.5 rounded-lg"
               >
-                <div className="flex min-w-0 items-center gap-2">
+                <div className="flex min-w-0 items-center gap-2.5">
                   <span
-                    className="h-2 w-2 shrink-0 rounded-full"
+                    className="h-2.5 w-2.5 shrink-0 rounded-full transition-transform duration-200 hover:scale-125"
                     style={{ backgroundColor: item.color }}
                   />
                   <span className="truncate text-foreground">
@@ -138,7 +140,7 @@ export function StatusBreakdown({ sessions }: { sessions: Session[] }) {
                     />
                   </span>
                 </div>
-                <div className="flex items-center gap-2 font-tabular text-muted-foreground">
+                <div className="flex items-center gap-2 font-tabular text-muted-foreground/80">
                   <span className="font-medium text-foreground">
                     {formatNumber(item.value)}
                   </span>

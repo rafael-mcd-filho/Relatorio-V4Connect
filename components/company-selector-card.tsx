@@ -37,8 +37,8 @@ export function CompanySelectorCard({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-1.5">
-          <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <div className="space-y-2">
+          <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground/80">
             Empresa selecionada
           </div>
           <Select

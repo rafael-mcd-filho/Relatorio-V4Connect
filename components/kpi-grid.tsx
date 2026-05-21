@@ -81,17 +81,16 @@ export function KpiGrid({ sessions, analytics }: KpiGridProps) {
   const valueAtRisk = kpis.contactsUnclassified * kpis.averageTicket;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-8">
       <KpiSection
         title="Volume"
         description="Tamanho da base e movimentação geral no período."
-        columnsClassName="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"
+        columnsClassName="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
       >
         <KpiCard
           label="Total de atendimentos"
           explanation="Conta todos os atendimentos do período e dos filtros escolhidos, mesmo quando o mesmo contato apareceu mais de uma vez."
           value={formatNumber(kpis.totalSessions)}
-          hint={`${formatNumber(kpis.hiddenSessions)} ocultos`}
           icon={<MessageSquare className="h-4 w-4" />}
           accent="primary"
           sparkline={sparkTotal}
@@ -212,12 +211,12 @@ function KpiSection({
   children: ReactNode;
 }) {
   return (
-    <section className="space-y-3">
+    <section className="space-y-4">
       <div>
-        <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+        <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground/80">
           {title}
         </div>
-        <div className="mt-1 text-sm text-muted-foreground">{description}</div>
+        <div className="mt-1.5 text-sm text-muted-foreground/70">{description}</div>
       </div>
       <div className={columnsClassName}>{children}</div>
     </section>

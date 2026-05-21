@@ -85,31 +85,35 @@ export function CohortConversionCard({
           return (
             <div
               key={cohort.key}
-              className={cn("rounded-xl border p-4", cohort.surface, cohort.border)}
+              className={cn(
+                "rounded-xl border p-4 transition-all duration-200 hover:shadow-sm hover:scale-[1.01] group",
+                cohort.surface,
+                cohort.border,
+              )}
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <div className="text-sm font-semibold text-foreground">
                     {cohort.label}
                   </div>
-                  <div className="mt-1 text-xs text-muted-foreground">
+                  <div className="mt-1 text-xs text-muted-foreground/80">
                     {formatNumber(cohort.wonContacts)} ganhos de{" "}
                     {formatNumber(cohort.totalContacts)} contatos
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-display text-2xl font-semibold font-tabular text-foreground">
+                  <div className="font-display text-2xl font-semibold font-tabular text-foreground transition-transform duration-200 group-hover:scale-105">
                     {formatPercent(cohort.wonRateOnBase)}
                   </div>
-                  <div className="mt-1 text-xs text-muted-foreground">
+                  <div className="mt-1 text-xs text-muted-foreground/80">
                     ganho sobre a base
                   </div>
                 </div>
               </div>
 
-              <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-background/80">
+              <div className="mt-4 h-3 overflow-hidden rounded-full bg-background/60 transition-colors duration-300">
                 <div
-                  className="h-full rounded-full transition-all"
+                  className="h-full rounded-full transition-all duration-700 ease-out"
                   style={{
                     width: `${barWidth}%`,
                     backgroundColor: cohort.color,
@@ -117,15 +121,15 @@ export function CohortConversionCard({
                 />
               </div>
 
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground/70">
                 <span>
                   Conversão final {formatPercent(cohort.finalConversionRate)}
                 </span>
-                <span>
+                <span className="font-medium">
                   {formatNumber(cohort.classifiedContacts)} classificados
                 </span>
               </div>
-              <div className="mt-1 text-xs text-muted-foreground">
+              <div className="mt-1 text-xs text-muted-foreground/70">
                 {formatNumber(cohort.unclassifiedContacts)} sem classificação no
                 grupo.
               </div>
@@ -133,7 +137,7 @@ export function CohortConversionCard({
           );
         })}
 
-        <div className="rounded-xl border border-dashed border-border bg-muted/20 p-4 text-sm text-muted-foreground">
+        <div className="rounded-xl border border-dashed border-border/50 bg-muted/10 p-4 text-sm text-muted-foreground/80">
           {gapText}
         </div>
       </CardContent>

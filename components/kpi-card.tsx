@@ -42,17 +42,17 @@ export function KpiCard({
   const neutral = hasDelta && Math.abs(delta!) < 0.1;
 
   return (
-    <Card className="relative overflow-hidden p-5">
-      <div className="flex items-start justify-between">
-        <div className="space-y-1">
-          <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+    <Card className="relative overflow-hidden p-5 transition-all duration-200 hover:scale-[1.02]">
+      <div className="flex items-start justify-between gap-3">
+        <div className="space-y-1.5 flex-1">
+          <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">
             <MetricLabel label={label} explanation={explanation} />
           </div>
-          <div className="font-display text-2xl font-semibold tracking-tight font-tabular">
+          <div className="font-display text-3xl font-semibold tracking-tight font-tabular text-foreground">
             {value}
           </div>
           {hint && (
-            <div className="font-tabular text-[11px] text-muted-foreground">
+            <div className="font-tabular text-xs text-muted-foreground/80">
               {hint}
             </div>
           )}
@@ -60,7 +60,7 @@ export function KpiCard({
         {icon && (
           <div
             className={cn(
-              "flex h-9 w-9 items-center justify-center rounded-lg",
+              "flex h-10 w-10 items-center justify-center rounded-xl shrink-0 transition-transform duration-200",
               accentStyles[accent],
             )}
           >
@@ -69,14 +69,14 @@ export function KpiCard({
         )}
       </div>
 
-      <div className="mt-3 flex items-center justify-between">
+      <div className="mt-4 flex items-center justify-between">
         {hasDelta ? (
           <div
             className={cn(
-              "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium",
-              neutral && "bg-muted text-muted-foreground",
-              !neutral && good && "bg-success/10 text-success",
-              !neutral && !good && "bg-destructive/10 text-destructive",
+              "inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-medium transition-colors duration-200",
+              neutral && "bg-muted/50 text-muted-foreground",
+              !neutral && good && "bg-success/15 text-success",
+              !neutral && !good && "bg-destructive/15 text-destructive",
             )}
           >
             {neutral ? (
@@ -90,7 +90,7 @@ export function KpiCard({
               {delta! > 0 ? "+" : ""}
               {delta!.toFixed(1).replace(".", ",")}%
             </span>
-            <span className="text-muted-foreground">vs. período anterior</span>
+            <span className="text-muted-foreground/70">vs. período</span>
           </div>
         ) : (
           <span />
