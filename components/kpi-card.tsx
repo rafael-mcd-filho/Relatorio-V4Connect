@@ -14,6 +14,8 @@ interface KpiCardProps {
   icon?: React.ReactNode;
   accent?: "primary" | "accent" | "success" | "warning" | "chart-4" | "chart-5";
   sparkline?: number[];
+  onClick?: () => void;
+  actionLabel?: string;
 }
 
 const accentStyles: Record<NonNullable<KpiCardProps["accent"]>, string> = {
@@ -35,14 +37,37 @@ export function KpiCard({
   icon,
   accent = "primary",
   sparkline,
+  onClick,
+  actionLabel,
 }: KpiCardProps) {
   const hasDelta = typeof delta === "number";
   const deltaPositive = hasDelta ? delta > 0 : false;
   const good = deltaInverted ? !deltaPositive : deltaPositive;
   const neutral = hasDelta && Math.abs(delta!) < 0.1;
+  const clickable = Boolean(onClick);
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!onClick || event.target !== event.currentTarget) return;
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onClick();
+    }
+  };
 
   return (
-    <Card className="relative overflow-hidden p-5 transition-all duration-200 hover:scale-[1.02]">
+    <Card
+      className={cn(
+        "relative overflow-hidden p-5 transition-all duration-200 hover:scale-[1.02]",
+        clickable &&
+          "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+      )}
+      role={clickable ? "button" : undefined}
+      tabIndex={clickable ? 0 : undefined}
+      aria-label={clickable ? actionLabel ?? label : undefined}
+      onClick={onClick}
+      onKeyDown={handleKeyDown}
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1.5 flex-1">
           <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">

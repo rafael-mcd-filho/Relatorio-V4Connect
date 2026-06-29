@@ -58,6 +58,7 @@ function MetricTooltip({
             type="button"
             className="inline-flex h-3.5 w-3.5 items-center justify-center rounded-full border-0 bg-transparent p-0 text-muted-foreground transition-colors hover:text-foreground"
             aria-label="Explicacao da metrica"
+            onClick={(event) => event.stopPropagation()}
           >
             <CircleHelp className="h-3.5 w-3.5" />
           </button>
