@@ -172,6 +172,7 @@ export function KpiGrid({ sessions, analytics }: KpiGridProps) {
           sparkline={sparkUnclassified}
           onClick={() => setUnclassifiedOpen(true)}
           actionLabel="Abrir lista de atendimentos sem classificacao"
+          actionText="Ver lista"
         />
         <KpiCard
           label="Taxa de conversão"

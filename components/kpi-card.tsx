@@ -16,6 +16,7 @@ interface KpiCardProps {
   sparkline?: number[];
   onClick?: () => void;
   actionLabel?: string;
+  actionText?: string;
 }
 
 const accentStyles: Record<NonNullable<KpiCardProps["accent"]>, string> = {
@@ -39,6 +40,7 @@ export function KpiCard({
   sparkline,
   onClick,
   actionLabel,
+  actionText,
 }: KpiCardProps) {
   const hasDelta = typeof delta === "number";
   const deltaPositive = hasDelta ? delta > 0 : false;
@@ -117,6 +119,11 @@ export function KpiCard({
             </span>
             <span className="text-muted-foreground/70">vs. período</span>
           </div>
+        ) : actionText ? (
+          <span className="inline-flex items-center gap-1.5 rounded-lg bg-muted/60 px-2 py-1 text-[10px] font-medium text-foreground transition-colors duration-200">
+            {actionText}
+            <ArrowUpRight className="h-3 w-3" />
+          </span>
         ) : (
           <span />
         )}
