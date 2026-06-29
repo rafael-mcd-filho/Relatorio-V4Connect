@@ -97,25 +97,24 @@ export function KpiGrid({ sessions, analytics }: KpiGridProps) {
   const sparkContacts = daily.map(
     (bucket) => uniqueContactsByDay.get(bucket.date)?.size ?? 0,
   );
-  const sparkUnclassified = analytics.byDay.map((bucket) =>
-    Math.max(
-      bucket.totalSessions - bucket.wonSessions - bucket.lostSessions,
-      0,
-    ),
+  const unclassifiedSessionsByDay = new Map<string, number>();
+
+  for (const session of sessions) {
+    if (session.classification) continue;
+
+    const dayKey = toLocalDateKey(session.createdAt);
+    if (!dayKey) continue;
+
+    unclassifiedSessionsByDay.set(
+      dayKey,
+      (unclassifiedSessionsByDay.get(dayKey) ?? 0) + 1,
+    );
+  }
+
+  const sparkUnclassified = daily.map(
+    (bucket) => unclassifiedSessionsByDay.get(bucket.date) ?? 0,
   );
   const kpis = analytics.kpis;
-  const uniqueContactsBase = kpis.uniqueContacts || 1;
-  const lostPercent = (kpis.contactsLost / uniqueContactsBase) * 100;
-  const unclassifiedPercent =
-    (kpis.contactsUnclassified / uniqueContactsBase) * 100;
-  const classifiedContacts = kpis.contactsWon + kpis.contactsLost;
-  const contactsWonWithValue = Math.max(
-    kpis.contactsWon - kpis.contactsWonWithoutValue,
-    0,
-  );
-  const averageRevenuePerWin =
-    kpis.contactsWon > 0 ? kpis.totalRevenue / kpis.contactsWon : 0;
-  const valueAtRisk = kpis.contactsUnclassified * kpis.averageTicket;
   const contactLists = React.useMemo(
     () => buildKpiContactLists(analytics.items, sessions, kpis),
     [analytics.items, kpis, sessions],
@@ -123,6 +122,20 @@ export function KpiGrid({ sessions, analytics }: KpiGridProps) {
   const activeContactList = activeContactListKey
     ? contactLists[activeContactListKey]
     : null;
+  const unclassifiedContactCount =
+    contactLists.unclassifiedContacts.primaryValue;
+  const uniqueContactsBase = kpis.uniqueContacts || 1;
+  const lostPercent = (kpis.contactsLost / uniqueContactsBase) * 100;
+  const unclassifiedPercent =
+    (unclassifiedContactCount / uniqueContactsBase) * 100;
+  const classifiedContacts = kpis.contactsWon + kpis.contactsLost;
+  const contactsWonWithValue = Math.max(
+    kpis.contactsWon - kpis.contactsWonWithoutValue,
+    0,
+  );
+  const averageRevenuePerWin =
+    kpis.contactsWon > 0 ? kpis.totalRevenue / kpis.contactsWon : 0;
+  const valueAtRisk = unclassifiedContactCount * kpis.averageTicket;
 
   return (
     <div className="space-y-8">
@@ -204,8 +217,8 @@ export function KpiGrid({ sessions, analytics }: KpiGridProps) {
         />
         <KpiCard
           label="Sem classificação"
-          explanation="Conta quantos contatos passaram pelo período sem nenhum resultado final marcado como ganho ou perdido."
-          value={formatNumber(kpis.contactsUnclassified)}
+          explanation="Conta quantos contatos tiveram atendimento sem nenhuma classificação registrada no período."
+          value={formatNumber(unclassifiedContactCount)}
           hint={`${formatPercent(unclassifiedPercent)} da base única`}
           icon={<MinusCircle className="h-4 w-4" />}
           accent="chart-5"
@@ -258,7 +271,7 @@ export function KpiGrid({ sessions, analytics }: KpiGridProps) {
           label="Valor em risco"
           explanation="Estimativa do potencial ainda não convertido, multiplicando os contatos sem classificação pelo ticket médio atual."
           value={formatCurrency(valueAtRisk)}
-          hint={`${formatNumber(kpis.contactsUnclassified)} sem classificação x ${formatCurrency(kpis.averageTicket)}`}
+          hint={`${formatNumber(unclassifiedContactCount)} sem classificação x ${formatCurrency(kpis.averageTicket)}`}
           icon={<AlertTriangle className="h-4 w-4" />}
           accent="warning"
         />
@@ -435,7 +448,7 @@ function KpiContactBlock({
               <th className="px-4 py-3 font-semibold">Departamento</th>
               <th className="px-4 py-3 font-semibold">Agente</th>
               <th className="px-4 py-3 font-semibold">Status</th>
-              <th className="px-4 py-3 font-semibold">Resultado</th>
+              <th className="px-4 py-3 font-semibold">Classificação</th>
               <th className="px-4 py-3 font-semibold">Abrir</th>
             </tr>
           </thead>
@@ -510,8 +523,8 @@ function buildKpiContactLists(
     sessionFilter: (session) => isLostClassification(session.classification),
   });
   const unclassifiedRows = buildContactRows(items, sessions, {
-    itemFilter: (item) => item.outcome === "unclassified",
-    sessionFilter: (session) => !hasFinalOutcome(session),
+    includeUnmatchedSessions: true,
+    sessionFilter: (session) => !session.classification,
   });
 
   return {
@@ -568,9 +581,9 @@ function buildKpiContactLists(
     unclassifiedContacts: {
       title: "Atendimentos sem classificação",
       description:
-        "O card conta contatos únicos sem resultado final de ganho ou perda. A lista mostra os atendimentos desses contatos ainda sem resultado final no período filtrado.",
+        "Lista somente atendimentos sem nenhuma classificação registrada no período filtrado.",
       primaryLabel: "Contatos sem classificação",
-      primaryValue: kpis.contactsUnclassified,
+      primaryValue: unclassifiedRows.length,
       secondaryLabel: "Atendimentos listados",
       contacts: unclassifiedRows,
       emptyMessage:
@@ -654,13 +667,6 @@ function rowFromSession(contactId: string, session: Session): KpiContactRow {
     utmCampaign: session.contact?.utm?.campaign ?? null,
     sessions: [],
   };
-}
-
-function hasFinalOutcome(session: Session) {
-  return (
-    isGainClassification(session.classification) ||
-    isLostClassification(session.classification)
-  );
 }
 
 function isGainClassification(classification: Session["classification"]) {
@@ -751,7 +757,7 @@ function formatClassification(session: Session) {
     classification.description ??
     classification.categoryName ??
     classification.name ??
-    "Sem resultado final"
+    "Sem classificação"
   );
 }
 
