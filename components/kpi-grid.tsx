@@ -37,15 +37,37 @@ interface KpiGridProps {
 }
 
 type DashboardContactItem = DashboardAnalytics["items"][number];
+type KpiContactListKey =
+  | "totalSessions"
+  | "totalContacts"
+  | "newContacts"
+  | "wonContacts"
+  | "lostContacts"
+  | "unclassifiedContacts";
 
-interface UnclassifiedContactRow {
-  item: DashboardContactItem;
+interface KpiContactRow {
+  contactId: string;
+  contactName: string;
+  contactCreatedAtDisplay?: string;
+  leadSource: string;
+  utmCampaign?: string | null;
   sessions: Session[];
   lastSessionAt?: string;
 }
 
+interface KpiContactList {
+  title: string;
+  description: string;
+  primaryLabel: string;
+  primaryValue: number;
+  secondaryLabel: string;
+  contacts: KpiContactRow[];
+  emptyMessage: string;
+}
+
 export function KpiGrid({ sessions, analytics }: KpiGridProps) {
-  const [unclassifiedOpen, setUnclassifiedOpen] = React.useState(false);
+  const [activeContactListKey, setActiveContactListKey] =
+    React.useState<KpiContactListKey | null>(null);
   const daily = groupByDay(sessions);
   const sparkTotal = daily.map((bucket) => bucket.total);
   const sparkFinished = daily.map((bucket) => bucket.finished);
@@ -94,18 +116,20 @@ export function KpiGrid({ sessions, analytics }: KpiGridProps) {
   const averageRevenuePerWin =
     kpis.contactsWon > 0 ? kpis.totalRevenue / kpis.contactsWon : 0;
   const valueAtRisk = kpis.contactsUnclassified * kpis.averageTicket;
-  const unclassifiedContacts = React.useMemo(
-    () => buildUnclassifiedContactRows(analytics.items, sessions),
-    [analytics.items, sessions],
+  const contactLists = React.useMemo(
+    () => buildKpiContactLists(analytics.items, sessions, kpis),
+    [analytics.items, kpis, sessions],
   );
+  const activeContactList = activeContactListKey
+    ? contactLists[activeContactListKey]
+    : null;
 
   return (
     <div className="space-y-8">
-      <UnclassifiedSessionsModal
-        open={unclassifiedOpen}
-        onClose={() => setUnclassifiedOpen(false)}
-        contacts={unclassifiedContacts}
-        contactCount={kpis.contactsUnclassified}
+      <KpiContactsModal
+        list={activeContactList}
+        open={!!activeContactList}
+        onClose={() => setActiveContactListKey(null)}
       />
 
       <KpiSection
@@ -120,6 +144,9 @@ export function KpiGrid({ sessions, analytics }: KpiGridProps) {
           icon={<MessageSquare className="h-4 w-4" />}
           accent="primary"
           sparkline={sparkTotal}
+          onClick={() => setActiveContactListKey("totalSessions")}
+          actionLabel="Abrir lista de contatos dos atendimentos"
+          actionText="Ver lista"
         />
         <KpiCard
           label="Total de contatos"
@@ -129,6 +156,9 @@ export function KpiGrid({ sessions, analytics }: KpiGridProps) {
           icon={<Users className="h-4 w-4" />}
           accent="chart-5"
           sparkline={sparkContacts}
+          onClick={() => setActiveContactListKey("totalContacts")}
+          actionLabel="Abrir lista de contatos"
+          actionText="Ver lista"
         />
         <KpiCard
           label="Contatos novos"
@@ -138,6 +168,9 @@ export function KpiGrid({ sessions, analytics }: KpiGridProps) {
           icon={<UserPlus className="h-4 w-4" />}
           accent="warning"
           sparkline={sparkNewContacts}
+          onClick={() => setActiveContactListKey("newContacts")}
+          actionLabel="Abrir lista de contatos novos"
+          actionText="Ver lista"
         />
       </KpiSection>
 
@@ -153,6 +186,9 @@ export function KpiGrid({ sessions, analytics }: KpiGridProps) {
           icon={<CheckCircle2 className="h-4 w-4" />}
           accent="success"
           sparkline={sparkFinished}
+          onClick={() => setActiveContactListKey("wonContacts")}
+          actionLabel="Abrir lista de contatos ganhos"
+          actionText="Ver lista"
         />
         <KpiCard
           label="Perdidos"
@@ -162,6 +198,9 @@ export function KpiGrid({ sessions, analytics }: KpiGridProps) {
           icon={<AlertCircle className="h-4 w-4" />}
           accent="warning"
           sparkline={sparkOther}
+          onClick={() => setActiveContactListKey("lostContacts")}
+          actionLabel="Abrir lista de contatos perdidos"
+          actionText="Ver lista"
         />
         <KpiCard
           label="Sem classificação"
@@ -171,7 +210,7 @@ export function KpiGrid({ sessions, analytics }: KpiGridProps) {
           icon={<MinusCircle className="h-4 w-4" />}
           accent="chart-5"
           sparkline={sparkUnclassified}
-          onClick={() => setUnclassifiedOpen(true)}
+          onClick={() => setActiveContactListKey("unclassifiedContacts")}
           actionLabel="Abrir lista de atendimentos sem classificacao"
           actionText="Ver lista"
         />
@@ -228,16 +267,14 @@ export function KpiGrid({ sessions, analytics }: KpiGridProps) {
   );
 }
 
-function UnclassifiedSessionsModal({
+function KpiContactsModal({
   open,
   onClose,
-  contacts,
-  contactCount,
+  list,
 }: {
   open: boolean;
   onClose: () => void;
-  contacts: UnclassifiedContactRow[];
-  contactCount: number;
+  list: KpiContactList | null;
 }) {
   React.useEffect(() => {
     if (!open) return;
@@ -257,9 +294,9 @@ function UnclassifiedSessionsModal({
     };
   }, [onClose, open]);
 
-  if (!open || typeof document === "undefined") return null;
+  if (!open || !list || typeof document === "undefined") return null;
 
-  const sessionCount = contacts.reduce(
+  const sessionCount = list.contacts.reduce(
     (sum, contact) => sum + contact.sessions.length,
     0,
   );
@@ -274,21 +311,19 @@ function UnclassifiedSessionsModal({
       <div
         role="dialog"
         aria-modal="true"
-        aria-labelledby="unclassified-sessions-title"
+        aria-labelledby="kpi-contact-list-title"
         className="relative z-[101] flex max-h-[88vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl"
       >
         <div className="flex items-start justify-between gap-4 border-b border-border/70 p-5">
           <div>
             <div
-              id="unclassified-sessions-title"
+              id="kpi-contact-list-title"
               className="text-base font-semibold text-foreground"
             >
-              Atendimentos sem classificação
+              {list.title}
             </div>
             <div className="mt-1 max-w-3xl text-sm text-muted-foreground">
-              O card conta contatos únicos sem resultado final de ganho ou
-              perda. A lista mostra os atendimentos desses contatos ainda sem
-              resultado final no período filtrado.
+              {list.description}
             </div>
           </div>
           <Button
@@ -304,25 +339,25 @@ function UnclassifiedSessionsModal({
 
         <div className="grid gap-3 border-b border-border/70 bg-muted/30 p-4 sm:grid-cols-2">
           <SummaryPill
-            label="Contatos sem classificação"
-            value={formatNumber(contactCount)}
+            label={list.primaryLabel}
+            value={formatNumber(list.primaryValue)}
           />
           <SummaryPill
-            label="Atendimentos listados"
+            label={list.secondaryLabel}
             value={formatNumber(sessionCount)}
           />
         </div>
 
         <div className="overflow-y-auto p-4">
-          {contacts.length === 0 ? (
+          {list.contacts.length === 0 ? (
             <div className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-              Nenhum atendimento sem classificação nos filtros atuais.
+              {list.emptyMessage}
             </div>
           ) : (
             <div className="space-y-3">
-              {contacts.map((contact) => (
-                <UnclassifiedContactBlock
-                  key={contact.item.contactId}
+              {list.contacts.map((contact) => (
+                <KpiContactBlock
+                  key={contact.contactId}
                   row={contact}
                 />
               ))}
@@ -354,12 +389,11 @@ function SummaryPill({
   );
 }
 
-function UnclassifiedContactBlock({
+function KpiContactBlock({
   row,
 }: {
-  row: UnclassifiedContactRow;
+  row: KpiContactRow;
 }) {
-  const contact = row.item;
   const identifier =
     row.sessions.find((session) => session.contact?.identifier)?.contact
       ?.identifier ?? "Sem identificador";
@@ -369,23 +403,23 @@ function UnclassifiedContactBlock({
       <div className="flex flex-col gap-3 border-b border-border/60 p-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
           <div className="truncate text-sm font-semibold text-foreground">
-            {contact.contactName}
+            {row.contactName}
           </div>
           <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
             <span>{identifier}</span>
             <span>{formatNumber(row.sessions.length)} atendimentos</span>
-            {contact.contactCreatedAtDisplay ? (
-              <span>Contato criado em {contact.contactCreatedAtDisplay}</span>
+            {row.contactCreatedAtDisplay ? (
+              <span>Contato criado em {row.contactCreatedAtDisplay}</span>
             ) : null}
           </div>
         </div>
         <div className="flex flex-wrap gap-2 text-xs">
           <span className="rounded-full bg-muted px-2.5 py-1 text-muted-foreground">
-            {contact.leadSource}
+            {row.leadSource}
           </span>
-          {contact.utmCampaign ? (
+          {row.utmCampaign ? (
             <span className="rounded-full bg-muted px-2.5 py-1 text-muted-foreground">
-              {contact.utmCampaign}
+              {row.utmCampaign}
             </span>
           ) : null}
         </div>
@@ -455,42 +489,171 @@ function UnclassifiedContactBlock({
   );
 }
 
-function buildUnclassifiedContactRows(
+function buildKpiContactLists(
   items: DashboardContactItem[],
   sessions: Session[],
-): UnclassifiedContactRow[] {
-  const itemByContactId = new Map(
-    items
-      .filter((item) => item.outcome === "unclassified")
-      .map((item) => [item.contactId, item]),
-  );
-  const sessionsByContactId = new Map<string, Session[]>();
+  kpis: DashboardAnalytics["kpis"],
+): Record<KpiContactListKey, KpiContactList> {
+  const totalSessionRows = buildContactRows(items, sessions, {
+    includeUnmatchedSessions: true,
+  });
+  const totalContactRows = buildContactRows(items, sessions);
+  const newContactRows = buildContactRows(items, sessions, {
+    itemFilter: (item) => item.isNew,
+  });
+  const wonContactRows = buildContactRows(items, sessions, {
+    itemFilter: (item) => item.outcome === "won",
+    sessionFilter: (session) => isGainClassification(session.classification),
+  });
+  const lostContactRows = buildContactRows(items, sessions, {
+    itemFilter: (item) => item.outcome === "lost",
+    sessionFilter: (session) => isLostClassification(session.classification),
+  });
+  const unclassifiedRows = buildContactRows(items, sessions, {
+    itemFilter: (item) => item.outcome === "unclassified",
+    sessionFilter: (session) => !hasFinalOutcome(session),
+  });
+
+  return {
+    totalSessions: {
+      title: "Contatos dos atendimentos",
+      description:
+        "Lista os contatos ligados aos atendimentos do período e dos filtros ativos. O total do card conta atendimentos, então um contato pode aparecer com mais de um atendimento.",
+      primaryLabel: "Atendimentos no KPI",
+      primaryValue: kpis.totalSessions,
+      secondaryLabel: "Atendimentos listados",
+      contacts: totalSessionRows,
+      emptyMessage: "Nenhum atendimento encontrado nos filtros atuais.",
+    },
+    totalContacts: {
+      title: "Total de contatos",
+      description:
+        "Lista os contatos únicos que tiveram atendimento no período e nos filtros ativos.",
+      primaryLabel: "Contatos no KPI",
+      primaryValue: kpis.uniqueContacts,
+      secondaryLabel: "Atendimentos desses contatos",
+      contacts: totalContactRows,
+      emptyMessage: "Nenhum contato encontrado nos filtros atuais.",
+    },
+    newContacts: {
+      title: "Contatos novos",
+      description:
+        "Lista os contatos cujo cadastro foi criado dentro do período escolhido.",
+      primaryLabel: "Contatos novos",
+      primaryValue: kpis.newContacts,
+      secondaryLabel: "Atendimentos desses contatos",
+      contacts: newContactRows,
+      emptyMessage: "Nenhum contato novo encontrado nos filtros atuais.",
+    },
+    wonContacts: {
+      title: "Contatos ganhos",
+      description:
+        "Lista os contatos que tiveram pelo menos um resultado marcado como ganho no período. A tabela mostra os atendimentos com classificação de ganho.",
+      primaryLabel: "Contatos ganhos",
+      primaryValue: kpis.contactsWon,
+      secondaryLabel: "Atendimentos ganhos",
+      contacts: wonContactRows,
+      emptyMessage: "Nenhum contato ganho encontrado nos filtros atuais.",
+    },
+    lostContacts: {
+      title: "Contatos perdidos",
+      description:
+        "Lista os contatos que tiveram resultado final marcado como perdido no período. A tabela mostra os atendimentos com classificação de perda.",
+      primaryLabel: "Contatos perdidos",
+      primaryValue: kpis.contactsLost,
+      secondaryLabel: "Atendimentos perdidos",
+      contacts: lostContactRows,
+      emptyMessage: "Nenhum contato perdido encontrado nos filtros atuais.",
+    },
+    unclassifiedContacts: {
+      title: "Atendimentos sem classificação",
+      description:
+        "O card conta contatos únicos sem resultado final de ganho ou perda. A lista mostra os atendimentos desses contatos ainda sem resultado final no período filtrado.",
+      primaryLabel: "Contatos sem classificação",
+      primaryValue: kpis.contactsUnclassified,
+      secondaryLabel: "Atendimentos listados",
+      contacts: unclassifiedRows,
+      emptyMessage:
+        "Nenhum atendimento sem classificação encontrado nos filtros atuais.",
+    },
+  };
+}
+
+function buildContactRows(
+  items: DashboardContactItem[],
+  sessions: Session[],
+  options: {
+    itemFilter?: (item: DashboardContactItem) => boolean;
+    sessionFilter?: (session: Session) => boolean;
+    includeUnmatchedSessions?: boolean;
+  } = {},
+): KpiContactRow[] {
+  const itemFilter = options.itemFilter ?? (() => true);
+  const sessionFilter = options.sessionFilter ?? (() => true);
+  const itemByContactId = new Map(items.map((item) => [item.contactId, item]));
+  const rowsByContactId = new Map<string, KpiContactRow>();
+
+  for (const item of items) {
+    if (!itemFilter(item)) continue;
+    rowsByContactId.set(item.contactId, rowFromItem(item));
+  }
 
   for (const session of sessions) {
     const contactId = session.contact?.id;
-    if (!contactId || !itemByContactId.has(contactId)) continue;
-    if (hasFinalOutcome(session)) continue;
+    const item = contactId ? itemByContactId.get(contactId) : undefined;
 
-    if (!sessionsByContactId.has(contactId)) {
-      sessionsByContactId.set(contactId, []);
+    if (item && !itemFilter(item)) continue;
+    if (!item && !options.includeUnmatchedSessions) continue;
+    if (!sessionFilter(session)) continue;
+
+    const rowKey = contactId ?? `sem-contato:${session.id}`;
+
+    if (!rowsByContactId.has(rowKey)) {
+      rowsByContactId.set(
+        rowKey,
+        item ? rowFromItem(item) : rowFromSession(rowKey, session),
+      );
     }
 
-    sessionsByContactId.get(contactId)!.push(session);
+    rowsByContactId.get(rowKey)!.sessions.push(session);
   }
 
-  return Array.from(itemByContactId.values())
-    .map((item) => {
-      const contactSessions = (sessionsByContactId.get(item.contactId) ?? [])
+  return Array.from(rowsByContactId.values())
+    .map((row) => {
+      const sortedSessions = row.sessions
         .slice()
         .sort((a, b) => getTime(b.createdAt) - getTime(a.createdAt));
 
       return {
-        item,
-        sessions: contactSessions,
-        lastSessionAt: contactSessions[0]?.createdAt,
+        ...row,
+        sessions: sortedSessions,
+        lastSessionAt: sortedSessions[0]?.createdAt,
       };
     })
+    .filter((row) => row.sessions.length > 0)
     .sort((a, b) => getTime(b.lastSessionAt) - getTime(a.lastSessionAt));
+}
+
+function rowFromItem(item: DashboardContactItem): KpiContactRow {
+  return {
+    contactId: item.contactId,
+    contactName: item.contactName,
+    contactCreatedAtDisplay: item.contactCreatedAtDisplay,
+    leadSource: item.leadSource,
+    utmCampaign: item.utmCampaign,
+    sessions: [],
+  };
+}
+
+function rowFromSession(contactId: string, session: Session): KpiContactRow {
+  return {
+    contactId,
+    contactName: session.contact?.name ?? "Sem contato",
+    contactCreatedAtDisplay: formatDateOnly(session.contact?.createdAt),
+    leadSource: session.contact?.origin ?? "Sem origem",
+    utmCampaign: session.contact?.utm?.campaign ?? null,
+    sessions: [],
+  };
 }
 
 function hasFinalOutcome(session: Session) {
@@ -558,6 +721,18 @@ function formatDateTime(value?: string) {
   });
 
   return formatted || "Sem data";
+}
+
+function formatDateOnly(value?: string) {
+  if (!value) return undefined;
+
+  const formatted = formatDate(value, {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
+  return formatted || undefined;
 }
 
 function formatChannel(session: Session) {
