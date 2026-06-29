@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import type { ReactNode } from "react";
+import { createPortal } from "react-dom";
 import {
   AlertCircle,
   AlertTriangle,
@@ -256,16 +257,16 @@ function UnclassifiedSessionsModal({
     };
   }, [onClose, open]);
 
-  if (!open) return null;
+  if (!open || typeof document === "undefined") return null;
 
   const sessionCount = contacts.reduce(
     (sum, contact) => sum + contact.sessions.length,
     0,
   );
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-3 backdrop-blur-sm sm:p-6"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/40 p-3 backdrop-blur-sm sm:p-6"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
@@ -274,7 +275,7 @@ function UnclassifiedSessionsModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="unclassified-sessions-title"
-        className="flex max-h-[88vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl"
+        className="relative z-[101] flex max-h-[88vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl"
       >
         <div className="flex items-start justify-between gap-4 border-b border-border/70 p-5">
           <div>
@@ -329,7 +330,8 @@ function UnclassifiedSessionsModal({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
