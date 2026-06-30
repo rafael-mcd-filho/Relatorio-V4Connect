@@ -13,6 +13,10 @@ export const COMPANY_CATALOG: CompanyCatalogEntry[] = [
     companyId: "61c52e23-a64e-4411-9988-aa6736b740b1",
   },
   {
+    companyName: "Dr. Derick",
+    companyId: "58cc7af5-2a10-45ed-9559-d2a9c43d21a3",
+  },
+  {
     companyName: "EXPRESSO TURISMO",
     companyId: "db25a365-233b-44f1-b77b-4a1269ce551a",
   },

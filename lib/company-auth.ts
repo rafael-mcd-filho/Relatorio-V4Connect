@@ -10,6 +10,8 @@ const COMPANY_TOKEN_BY_ID: Record<string, string> = {
     "pn_UOOUHXZoS3CNP8Rqb1fmEG2FhBlsc0Cgo10pfwwvVY",
   "61c52e23-a64e-4411-9988-aa6736b740b1":
     "pn_Ymoi2nTOhoZgxglXpBKt7wTEPSiUt0OVTbV2R7V5s",
+  "58cc7af5-2a10-45ed-9559-d2a9c43d21a3":
+    "pn_9zs7DywgtHKzi48TtdS0LgnjQv5nsWCpVAY5U5uC8",
   "db25a365-233b-44f1-b77b-4a1269ce551a":
     "pn_8J9XeTP4GqExeoyTAUAOgLuhRPQIknMA5VFnuCb3Y",
   "8229f7fc-9e2e-4a08-9fd3-6610cb737cfa":
